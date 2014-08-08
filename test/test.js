@@ -4,11 +4,12 @@ var assert = require("assert"),
 /* Binary Search Tree Testing
 ------------------------------------------------------------------------------*/
 describe('BinarySearchTree', function() {
-  var bst;
+  var BinarySearchTree = ds.BinarySearchTree,
+      bst;
 
   beforeEach(function () {
     // New tree for each test
-    bst = new ds.BinarySearchTree();
+    bst = new BinarySearchTree();
   });
 
   describe('#BinarySearchTree', function () {
@@ -284,3 +285,167 @@ describe('#contains', function () {
     });
   });
 })
+
+/* Heap
+------------------------------------------------------------------------------*/
+describe('Heap', function() {
+  var Heap = ds.Heap,
+      heap;
+
+  beforeEach(function () {
+    // New heap for each test
+    heap = new Heap(Heap.MIN);
+  });
+
+  describe('#insert', function () {
+    it('should insert value at root when heap is empty', function () {
+      heap.insert(10);
+      assert.equal(10, heap.contents[0]);
+    });
+    it('should remain complete when inserting elements', function () {
+      heap.insert(10);
+      heap.insert(20);
+      assert.equal(20, heap.contents[1]);
+      heap.insert(30);
+      assert.equal(30, heap.contents[2]);
+      heap.insert(25);
+      assert.equal(25, heap.contents[3]);
+    });
+    it('should sift the inserted item to the root to satisfy the heap property', function () {
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(5);
+      assert.equal(5, heap.contents[0]);
+    });
+  });
+
+  describe('#remove', function () {
+    it('should return null if the heap is empty', function () {
+      var removed = heap.remove();
+      assert.equal(null, removed);
+    });
+    it('should return the top value on the heap', function () {
+      var top,
+          removed;
+
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+      top = heap.contents[0];
+      removed = heap.remove();
+      assert.equal(top, removed);
+    });
+    it('should replace removed top of heap and then heapdown to maintain heap property', function () {
+      var removed;
+
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+      removed = heap.remove();
+      assert.equal(20, heap.contents[0]);
+      assert.equal(33, heap.contents[3]);
+    });
+    it('should shrink the contents of the heap by 1', function () {
+      var removed;
+
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+      removed = heap.remove();
+      assert.equal(4, heap.contents.length);
+    });
+  });
+
+  describe('#peek', function () {
+    it('should return the top of the heap', function () {
+      var top,
+          peeked;
+
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+      top = heap.contents[0];
+      peeked = heap.peek();
+      assert.equal(top, peeked);
+    });
+    it('should not affect the heap structure', function () {
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+      heap.peek();
+      assert.equal(10, heap.contents[0]);
+      assert.equal(5, heap.contents.length);
+    });
+  });
+
+  describe('#clear', function () {
+    it('should make the top of the heap undefined', function () {
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+      heap.clear();
+      assert.equal(undefined, heap.contents[0]);
+    });
+    it('should make the size of the contents of the array 0', function () {
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+      heap.clear();
+      assert.equal(0, heap.contents.length);
+    });
+  });
+
+  describe('#size', function () {
+    it('should return 0 for a new, empty heap', function () {
+      assert.equal(0, heap.size());
+    });
+    it('should increment by 1 when an element is added to the heap', function () {
+      assert.equal(0, heap.size());
+      heap.insert(10);
+      assert.equal(1, heap.size());
+      heap.insert(20);
+      assert.equal(2, heap.size());
+      heap.insert(30);
+      assert.equal(3, heap.size());
+      heap.insert(25);
+      assert.equal(4, heap.size());
+      heap.insert(33);
+      assert.equal(5, heap.size());
+    });
+    it('should decrement by 1 when an element is removed from the heap', function () {
+      heap.insert(10);
+      heap.insert(20);
+      heap.insert(30);
+      heap.insert(25);
+      heap.insert(33);
+
+      assert.equal(5, heap.size());
+      heap.remove();
+      assert.equal(4, heap.size());
+      heap.remove();
+      assert.equal(3, heap.size());
+      heap.remove();
+      assert.equal(2, heap.size());
+      heap.remove();
+      assert.equal(1, heap.size());
+      heap.remove();
+      assert.equal(0, heap.size());
+    });
+  });
+});
