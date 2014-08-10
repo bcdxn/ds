@@ -449,3 +449,232 @@ describe('Heap', function() {
     });
   });
 });
+
+/* Linked List
+------------------------------------------------------------------------------*/
+describe('LinkedList', function() {
+  var LinkedList = ds.LinkedList,
+      ll;
+
+  beforeEach(function () {
+    // New LinkedList for each test
+    ll = new LinkedList();
+  });
+
+  describe('#LinkedList', function () {
+    it('should have a size of 0', function () {
+      assert.equal(0, ll.size);
+    });
+    it('should have a null head', function() {
+      assert.equal(null, ll.head);
+    })
+    it('should have a null tail', function () {
+      assert.equal(null, ll.tail);
+    });
+  });
+  describe('#add', function () {
+    it('tail and head should be the same node when adding into empty list', function () {
+      ll.add(10);
+      assert.equal(ll.head.elem, ll.tail.elem);
+      assert.equal(ll.head, ll.tail);
+    });
+    it('The size should increment when an item is added', function () {
+      ll.add(10);
+      assert.equal(1, ll.size);
+      ll.add(20);
+      assert.equal(2, ll.size);
+      ll.add(30);
+      assert.equal(3, ll.size);
+      ll.add(25);
+      assert.equal(4, ll.size);
+    });
+    it('should add newly added items to the end of the list', function () {
+      ll.add(10);
+      assert.equal(10, ll.tail.elem);
+      ll.add(20);
+      assert.equal(20, ll.tail.elem);
+      ll.add(30);
+      assert.equal(30, ll.tail.elem);
+      ll.add(25);
+      assert.equal(25, ll.tail.elem);
+      ll.add(5);
+      assert.equal(5, ll.tail.elem);
+    });
+    it('should maintain the internal pointers needed to navigate from head to tail', function () {
+        ll.add(10);
+        assert.equal(null, ll.head.next);
+        ll.add(15);
+        assert.equal(15, ll.head.next.elem);
+        assert.equal(15, ll.tail.elem);
+        assert.equal(null, ll.tail.next);
+        ll.add(2);
+        assert.equal(15, ll.head.next.elem);
+        assert.equal(2, ll.head.next.next.elem);
+        assert.equal(2, ll.tail.elem);
+        assert.equal(null, ll.tail.next);
+        ll.add(7);
+        assert.equal(15, ll.head.next.elem);
+        assert.equal(2, ll.head.next.next.elem);
+        assert.equal(7, ll.head.next.next.next.elem);
+        assert.equal(7, ll.tail.elem);
+        assert.equal(null, ll.tail.next);
+    });
+  });
+
+  describe('#insertAfter', function () {
+    it('The size should increment when an item is added', function () {
+      var node;
+
+      ll.add(10);
+      ll.add(20);
+      ll.add(30);
+      ll.add(25);
+      assert.equal(4, ll.size);
+      node = ll.get(20);
+      ll.insertAfter(node, 100);
+      assert.equal(5, ll.size);
+    });
+    it('should add newly add items to specified point in list', function () {
+      var node;
+
+      ll.add(10);
+      ll.add(20);
+      ll.add(30);
+      ll.add(25);
+
+      node = ll.get(20);
+      ll.insertAfter(node, 100);
+      assert.equal(100, ll.head.next.next.elem);
+    });
+    it('should maintain the internal pointers needed to navigate from head to tail', function () {
+      var node;
+
+      ll.add(10);
+      ll.add(20);
+      ll.add(30);
+      ll.add(25);
+
+      node = ll.get(20);
+      ll.insertAfter(node, 100);
+      assert.equal(100, ll.head.next.next.elem);
+      assert.equal(25, ll.head.next.next.next.next.elem);
+    });
+    it('should add as tail if added after tail', function () {
+      var node;
+
+      ll.add(10);
+      ll.add(20);
+      ll.add(30);
+      ll.add(25);
+
+      node = ll.get(25);
+      ll.insertAfter(node, 100);
+      assert.equal(100, ll.head.next.next.next.next.elem);
+      assert.equal(100, ll.tail.elem);
+    });
+  });
+
+  describe('#remove', function () {
+    it('should return null if the list is empty', function () {
+      assert.equal(null, ll.remove());
+    });
+    it('should retrieve the head node', function () {
+      ll.add(10);
+      ll.add(15);
+      ll.add(2);
+      ll.add(7);
+      assert.equal(10, ll.remove().elem);
+      assert.equal(15, ll.remove().elem);
+      assert.equal(2, ll.remove().elem);
+      assert.equal(7, ll.remove().elem);
+    });
+    it('should decrement the size when an element is removed', function () {
+      ll.add(10);
+      ll.add(15);
+      ll.add(2);
+      ll.add(7);
+      ll.remove();
+      assert.equal(3, ll.size);
+      ll.remove();
+      assert.equal(2, ll.size);
+      ll.remove();
+      assert.equal(1, ll.size);
+      ll.remove();
+      assert.equal(0, ll.size);
+    });
+    it('should re-assign the head when an element is removed', function () {
+      ll.add(10);
+      ll.add(15);
+      ll.add(2);
+      ll.add(7);
+      assert.equal(10, ll.head.elem);
+      ll.remove();
+      assert.equal(15, ll.head.elem);
+      ll.remove();
+      assert.equal(2, ll.head.elem);
+    });
+    it('should assign the head to null if the last node in the list is removed', function () {
+      ll.add(10);
+      ll.add(15);
+      ll.add(2);
+      ll.add(7);
+      ll.remove();
+      ll.remove();
+      ll.remove();
+      ll.remove();
+      assert.equal(null, ll.head);
+    });
+    it('should assign the tail to null if the last node in the list is removed', function () {
+      ll.add(10);
+      ll.add(15);
+      ll.add(2);
+      ll.add(7);
+      ll.remove();
+      ll.remove();
+      ll.remove();
+      ll.remove();
+      assert.equal(null, ll.tail);
+    });
+  });
+
+  describe('#get', function () {
+      it('should return null if the list is empty', function () {
+        assert.equal(null, ll.get(10));
+      });
+      it('should return null if the element is not in the list', function () {
+        ll.add(10);
+        ll.add(15);
+        ll.add(2);
+        ll.add(7);
+        assert.equal(null, ll.get(20));
+      });
+      it('should return the node containing the element when found in list', function () {
+        ll.add(10);
+        ll.add(15);
+        ll.add(2);
+        ll.add(7);
+        assert.equal(2, ll.get(2).elem);
+      });
+    });
+
+  describe('#contains', function () {
+    it('should return false if the list is empty', function () {
+        assert.equal(false, ll.contains(10));
+      });
+      it('should return false if the element is not in the list', function () {
+        ll.add(10);
+        ll.add(15);
+        ll.add(2);
+        ll.add(7);
+        assert.equal(false, ll.contains(20));
+      });
+      it('should return true if the element is in the list', function () {
+        ll.add(10);
+        ll.add(15);
+        ll.add(2);
+        ll.add(7);
+        assert.equal(true, ll.contains(2));
+      });
+  });
+    
+});
