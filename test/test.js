@@ -675,6 +675,396 @@ describe('LinkedList', function() {
         ll.add(7);
         assert.equal(true, ll.contains(2));
       });
+  });    
+});
+
+/* Heap
+------------------------------------------------------------------------------*/
+describe('AvlTree', function() {
+  var AvlTree = ds.AvlTree,
+      avl;
+
+  beforeEach(function () {
+    // New AvlTree for each test
+    avl = new AvlTree();
   });
-    
+
+  describe('#insert', function () {
+    it('should insert element as root when the tree is empty', function () {
+      avl.insert(5);
+      assert.equal(5, avl.root.elem);
+    });
+    it('should insert element as left child when less than root', function () {
+      avl.insert(10);
+      avl.insert(5);
+      assert.equal(5, avl.root.left.elem);
+    });
+    it('should insert element as right child when greater than root', function() {
+      avl.insert(10);
+      avl.insert(15);
+      assert.equal(15, avl.root.right.elem);
+    });
+    it('should insert element as left left child when less than root.left', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(3);
+      assert.equal(3, avl.root.left.left.elem);
+    });
+    it('should insert element as left right child when less than root and greater than root.left', function() {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(7);
+      assert.equal(7, avl.root.left.right.elem);
+    });
+    it('should insert element as right left child when greater than root and less than root.right', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(20);
+      assert.equal(20, avl.root.right.right.elem);
+    });
+    it('should insert element as right right child when greater than root and root.right', function() {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(12);
+      assert.equal(12, avl.root.right.left.elem);
+    });
+    it('should maintain height property of nodes', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(3);
+
+      assert.equal(3, avl.root.height);
+      assert.equal(2, avl.root.left.height);
+      assert.equal(1, avl.root.right.height);
+      assert.equal(1, avl.root.left.left.height);
+    })
+    it('should increment the size of the tree by one when inserting', function() {
+      assert.equal(0, avl.size);
+      avl.insert(10);
+      assert.equal(1, avl.size);
+      avl.insert(5);
+      assert.equal(2, avl.size);
+      avl.insert(15);
+      assert.equal(3, avl.size);
+      avl.insert(12);
+      assert.equal(4, avl.size);
+    });
+    it('should maintain AVL balance requirement when creating case 1 left-left high', function () {
+      avl.insert(5);
+      avl.insert(4);
+      avl.insert(3);
+
+      assert.equal(4, avl.root.elem);
+      assert.equal(3, avl.root.left.elem);
+      assert.equal(5, avl.root.right.elem);
+    });
+    it('should maintain AVL balance requirement when creating case 2 left-right high', function () {
+      avl.insert(5);
+      avl.insert(3);
+      avl.insert(4);
+
+      assert.equal(4, avl.root.elem);
+      assert.equal(3, avl.root.left.elem);
+      assert.equal(5, avl.root.right.elem);
+    });
+    it('should maintain AVL balance requirement when creating case 3 right-right high', function () {
+      avl.insert(3);
+      avl.insert(4);
+      avl.insert(5);
+
+      assert.equal(4, avl.root.elem);
+      assert.equal(3, avl.root.left.elem);
+      assert.equal(5, avl.root.right.elem);
+    });
+    it('should maintain AVL balance requirement when creating case 4 right-left high', function () {
+      avl.insert(3);
+      avl.insert(5);
+      avl.insert(4);
+
+      assert.equal(4, avl.root.elem);
+      assert.equal(3, avl.root.left.elem);
+      assert.equal(5, avl.root.right.elem);
+    });
+  });
+
+  describe('#remove', function () {
+    it('should not change the size if the tree is empty', function () {
+      avl.remove(5)
+      assert.equal(0, avl.size);
+    });
+    it('should remove the root node if the tree has size 1', function () {
+      avl.insert(5);
+      avl.remove(5);
+      avl.remove(null, avl.root);
+    });
+    it('should decrement the size by 1 when a node is removed', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(4);
+      avl.insert(12);
+      assert.equal(5, avl.size);
+      avl.remove(4);
+      assert.equal(4, avl.size);
+      avl.remove(12)
+      assert.equal(3, avl.size);
+      avl.remove(15);
+      assert.equal(2, avl.size);
+      avl.remove(5);
+      assert.equal(1, avl.size);
+      avl.remove(10)
+      assert.equal(0, avl.size);
+    });
+    it('should remove the given leaf node', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(4);
+      avl.insert(12);
+
+      avl.remove(4);
+      assert.equal(null, avl.root.left.left);
+    });
+    it('should remove an internal node with only left child', function() {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(4);
+      avl.insert(12);
+
+      avl.remove(5);
+      assert.equal(4, avl.root.left.elem);
+      assert.equal(null, avl.root.left.left);
+    });
+    it('should remove an internal node with only right child', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(4);
+      avl.insert(16);
+
+      avl.remove(15);
+      assert.equal(16, avl.root.right.elem);
+      assert.equal(null, avl.root.right.right);
+    });
+    it('should remove an internal node with both left and right children', function() {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(4);
+      avl.insert(16);
+
+      avl.remove(15);
+      assert.equal(16, avl.root.right.elem);
+      assert.equal(null, avl.root.right.right);
+    });
+    it('should maintain AVL balance requirement when creating case 1 left-left high', function () {
+      avl.insert(10);
+      avl.insert(15);
+      avl.insert(5);
+      avl.insert(4);
+
+      avl.remove(15);
+      assert.equal(5, avl.root.elem);
+      assert.equal(4, avl.root.left.elem);
+      assert.equal(10, avl.root.right.elem);
+    });
+    it('should maintain AVL balance requirement when creating case 2 left-right high', function () {
+      avl.insert(10);
+      avl.insert(15);
+      avl.insert(4);
+      avl.insert(5);
+
+      avl.remove(15);
+      assert.equal(5, avl.root.elem);
+      assert.equal(4, avl.root.left.elem);
+      assert.equal(10, avl.root.right.elem);
+    });
+    it('should maintain AVL balance requirement when creating case 3 right-right high', function () {
+      avl.insert(10);
+      avl.insert(15);
+      avl.insert(5);
+      avl.insert(16);
+
+      avl.remove(5);
+      assert.equal(15, avl.root.elem);
+      assert.equal(10, avl.root.left.elem);
+      assert.equal(16, avl.root.right.elem);
+    });
+    it('should maintain AVL balance requirement when creating case 4 right-left high', function () {
+      avl.insert(10);
+      avl.insert(16);
+      avl.insert(5);
+      avl.insert(15);
+
+      avl.remove(5);
+      assert.equal(15, avl.root.elem);
+      assert.equal(10, avl.root.left.elem);
+      assert.equal(16, avl.root.right.elem);
+    });
+  });
+
+describe('#find', function () {
+    it('should not find an element that does not exist in the tree', function () {
+      assert.equal(null, avl.find(10));
+      avl.insert(10);
+      assert.equal(null, avl.find(15));
+    });
+    it('should find an element at the root', function () {
+      avl.insert(10);
+      assert.equal(10, avl.find(10).elem);
+    });
+    it('should find an element in the left subtree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      assert.equal(5, avl.find(5).elem);
+    });
+    it('should find an element in the right subtree', function () {
+      avl.insert(10);
+      avl.insert(15);
+      assert.equal(15, avl.find(15).elem);
+    });
+    it('should find an element in the left left subtree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(3);
+      assert.equal(3, avl.find(3).elem);
+    });
+    it('should find an element the left right subtree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(7);
+      assert.equal(7, avl.find(7).elem);
+    });
+    it('should find an element in the right left subtree', function () {
+      avl.insert(10);
+      avl.insert(15);
+      avl.insert(12);
+      assert.equal(12, avl.find(12).elem);
+    });
+    it('should find an element the right right subtree', function () {
+      avl.insert(10);
+      avl.insert(15);
+      avl.insert(20);
+      assert.equal(20, avl.find(20).elem);
+    });
+  });
+
+describe('#contains', function () {
+    it('should not find an element that does not exist in the tree', function () {
+      assert.equal(false, avl.contains(10));
+      avl.insert(10);
+      assert.equal(false, avl.contains(15));
+    });
+    it('should find an element at the root', function () {
+      avl.insert(10);
+      assert.equal(true, avl.contains(10));
+    });
+    it('should find an element in the left subtree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      assert.equal(true, avl.contains(5));
+    });
+    it('should find an element in the right subtree', function () {
+      avl.insert(10);
+      avl.insert(15);
+      assert.equal(true, avl.contains(15));
+    });
+    it('should find an element in the left left subtree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(3);
+      assert.equal(true, avl.contains(3));
+    });
+    it('should find an element the left right subtree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(7);
+      assert.equal(true, avl.contains(7));
+    });
+    it('should find an element in the right left subtree', function () {
+      avl.insert(10);
+      avl.insert(15);
+      avl.insert(12);
+      assert.equal(true, avl.contains(12));
+    });
+    it('should find an element the right right subtree', function () {
+      avl.insert(10);
+      avl.insert(15);
+      avl.insert(20);
+      assert.equal(true, avl.contains(20));
+    });
+  });
+
+  describe('#findMin', function () {
+    it('should find nothing in an empty tree', function () {
+      assert.equal(null, avl.findMin());
+    });
+    it('should find the root if the tree is of size 1', function () {
+      avl.insert(10);
+      assert.equal(10, avl.findMin().elem);
+    });
+    it('should min in multi level tree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(20);
+      assert.equal(5, avl.findMin().elem);
+      avl.insert(-10);
+      assert.equal(-10, avl.findMin().elem);
+      avl.insert(7);
+      assert.equal(-10, avl.findMin().elem);
+      avl.insert(-5);
+      assert.equal(-10, avl.findMin().elem);
+    });
+  });
+
+  describe('#findMax', function () {
+    it('should find nothing in an empty tree', function () {
+      assert.equal(null, avl.findMax());
+    });
+    it('should find the root if the tree is of size 1', function () {
+      avl.insert(10);
+      assert.equal(10, avl.findMax().elem);
+    });
+    it('should max in multi level tree', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(20);
+      assert.equal(20, avl.findMax().elem);
+      avl.insert(17);
+      assert.equal(20, avl.findMax().elem);
+      avl.insert(30);
+      assert.equal(30, avl.findMax().elem);
+    });
+  });
+
+  describe('#empty', function () {
+    it('should make size 0', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(20);
+      avl.insert(17);
+      avl.insert(30);
+      avl.empty();
+      assert.equal(0, avl.size);
+    });
+    it('should make root null', function () {
+      avl.insert(10);
+      avl.insert(5);
+      avl.insert(15);
+      avl.insert(20);
+      avl.insert(17);
+      avl.insert(30);
+      avl.empty();
+      assert.equal(null, avl.root);
+    });
+  });
 });
